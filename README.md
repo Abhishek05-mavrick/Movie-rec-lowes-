@@ -18,6 +18,25 @@ npm run dev
 
 Open the local URL printed by Vite in your browser.
 
+## TMDB integration
+
+The app automatically preloads TMDB movie rails and can search TMDB dynamically.
+The home page includes trending, top-rated, highest-grossing, drama, and
+thriller shelves plus an auto-rotating featured board. Search fetches multiple
+TMDB result pages in the background rather than requiring a load button. Create a local
+`.env.local` file from `.env.example` and add either a TMDB read access token
+or an API key:
+
+```bash
+VITE_TMDB_READ_ACCESS_TOKEN=your_read_access_token
+VITE_TMDB_API_KEY=your_api_key
+```
+
+Never commit `.env.local` or expose credentials in source code. Vite variables
+are available in the browser, so use a restricted TMDB credential and rotate
+any credential that has been exposed publicly. Without credentials, the app
+continues to work with the bundled local movie data.
+
 ## Available scripts
 
 ```bash

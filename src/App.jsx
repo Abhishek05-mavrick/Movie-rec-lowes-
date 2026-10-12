@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
+import { AppProvider, useApp } from './context/AppContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import MovieDetails from './pages/MovieDetails';
@@ -17,22 +18,25 @@ function NotFound() {
   );
 }
 
-export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+function AppContent() {
+  const { isLoggedIn, logout, login } = useApp();
   return (
     <div className="app-shell">
-      <Navbar isLoggedIn={isLoggedIn} onLogout={() => setIsLoggedIn(false)} />
+      <Navbar isLoggedIn={isLoggedIn} onLogout={logout} />
       <main className="page-container">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/movie/:movieId" element={<MovieDetails />} />
           <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/favorites" element={<Favorites />} />
-          <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} />} />
+          <Route path="/login" element={<Login onLogin={login} />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
     </div>
   );
+}
+
+export default function App() {
+  return <AppProvider><AppContent /></AppProvider>;
 }
