@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { movies } from '../data/movies';
 import Rating from '../components/Rating';

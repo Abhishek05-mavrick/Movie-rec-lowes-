@@ -1,33 +1,110 @@
-import { Link } from 'react-router-dom';
-import { movies } from '../data/movies';
-import Rating from '../components/Rating';
+
+import React, { useEffect, useMemo, useState } from 'react';
+import SearchBar from '../components/SearchBar';
+import GenreFilter from '../components/GenreFilter';
+import MovieList from '../components/MovieList';
+import {
+  getPopularMovies,
+  searchMovies,
+} from '../services/tmdb';
 
 export default function Home() {
+  const [search, setSearch] = useState('');
+  const [selectedGenre, setSelectedGenre] = useState('All');
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const timer = setTimeout(async () => {
+      setLoading(true);
+      setError('');
+
+      try {
+        const result = search.trim()
+          ? await searchMovies(search.trim())
+          : await getPopularMovies();
+
+        if (!cancelled) {
+          setMovies(result.movies);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err.message || 'Failed to load movies.');
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }, 400);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [search]);
+
+  const filteredMovies = useMemo(() => {
+    return movies.filter((movie) => {
+      return (
+        selectedGenre === 'All' ||
+        movie.genre === selectedGenre
+      );
+    });
+  }, [movies, selectedGenre]);
+
   return (
-    <div>
+    <main>
       <section className="hero">
         <p className="eyebrow">YOUR NEXT FAVORITE FILM</p>
         <h1>Find stories worth watching.</h1>
-        <p>Browse a hand-picked collection of films, from timeless classics to modern masterpieces.</p>
+        <p>
+          Discover popular movies, timeless classics,
+          and new favorites from around the world.
+        </p>
       </section>
+
       <section>
         <div className="section-heading">
-          <h2>Featured movies</h2>
-          <span>{movies.length} movies</span>
+          <h2>
+            {search.trim() ? 'Search results' : 'Popular movies'}
+          </h2>
+          <span>{filteredMovies.length} movies</span>
         </div>
-        <div className="movie-grid">
-          {movies.map((movie) => (
-            <Link className="movie-card" to={`/movie/${movie.id}`} key={movie.id}>
-              <img src={movie.poster} alt={`${movie.title} poster`} />
-              <div className="movie-card-content">
-                <h3>{movie.title}</h3>
-                <p>{movie.year} · {movie.genre}</p>
-                <Rating value={movie.rating} />
-              </div>
-            </Link>
-          ))}
+
+        <div className="discovery-controls">
+          <SearchBar
+            search={search}
+            onSearch={setSearch}
+          />
+
+          <GenreFilter
+            selectedGenre={selectedGenre}
+            onGenreChange={setSelectedGenre}
+          />
         </div>
+
+        {loading && <p>Loading movies...</p>}
+
+        {!loading && error && (
+          <p role="alert">
+            {error}
+            <br />
+            Check your API key and internet connection.
+          </p>
+        )}
+
+        {!loading && !error && filteredMovies.length === 0 && (
+          <p>No movies found. Try another title or genre.</p>
+        )}
+
+        {!loading && !error && filteredMovies.length > 0 && (
+          <MovieList movies={filteredMovies} />
+        )}
       </section>
-    </div>
+    </main>
   );
 }
