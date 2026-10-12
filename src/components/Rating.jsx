@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default function Rating({ value }) {
   const hasRating = typeof value === 'number' && Number.isFinite(value);
   const displayRating = hasRating ? value.toFixed(1) : 'Not rated';
