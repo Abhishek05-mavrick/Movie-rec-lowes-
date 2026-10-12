@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { movies } from '../data/movies';
 import Rating from '../components/Rating';
+import React from 'react';
 
 export default function Home() {
   return (
