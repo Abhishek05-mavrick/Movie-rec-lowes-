@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -17,16 +18,18 @@ function NotFound() {
 }
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   return (
     <div className="app-shell">
-      <Navbar />
+      <Navbar isLoggedIn={isLoggedIn} onLogout={() => setIsLoggedIn(false)} />
       <main className="page-container">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/movie/:movieId" element={<MovieDetails />} />
           <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/favorites" element={<Favorites />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
