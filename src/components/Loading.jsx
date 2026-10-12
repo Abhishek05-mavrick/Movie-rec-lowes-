@@ -1,3 +1,8 @@
-export default function Loading() {
-  return <p className="loading" role="status">Loading movies...</p>;
+export default function Loading({ message = 'Loading movies...' }) {
+  return (
+    <p className="loading" role="status">
+      <span aria-hidden="true" className="loading-spinner" />
+      {message}
+    </p>
+  );
 }
